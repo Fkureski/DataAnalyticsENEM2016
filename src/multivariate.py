@@ -4,7 +4,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from .config import FIG_DIR, REP_DIR
 
-def run_pearson(df: pd.DataFrame, focus_cols=None) -> pd.DataFrame:
+def run_pearson(df: pd.DataFrame) -> pd.DataFrame:
     num_df = df.select_dtypes(include=[np.number]).copy()
     corr = num_df.corr(method="pearson")
     corr.to_csv(REP_DIR / "pearson_corr.csv")
@@ -20,16 +20,3 @@ def run_pearson(df: pd.DataFrame, focus_cols=None) -> pd.DataFrame:
     plt.close()
     logging.info("Correlação de Pearson calculada e salva.")
     return corr
-
-def top_correlations_with_targets(corr: pd.DataFrame, targets: list, k: int = 8) -> pd.DataFrame:
-    rows = []
-    for t in targets:
-        if t not in corr.columns:
-            continue
-        s = corr[t].drop(index=t, errors="ignore").dropna().sort_values(key=lambda x: x.abs(), ascending=False)
-        topk = s.head(k)
-        for feat, val in topk.items():
-            rows.append({"target": t, "feature": feat, "pearson": float(val)})
-    out = pd.DataFrame(rows)
-    out.to_csv(REP_DIR / "top_correlations.csv", index=False)
-    return out

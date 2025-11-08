@@ -2,7 +2,6 @@ import logging
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
-from scipy import stats
 from .config import UNIVARIATE_COLUMNS, FIG_DIR, REP_DIR
 from .utils import ensure_dirs
 
@@ -10,11 +9,10 @@ def describe_series(s: pd.Series) -> dict:
     s_clean = s.dropna()
     mode_vals = s_clean.mode(dropna=True)
     mode = mode_vals.iloc[0] if not mode_vals.empty else np.nan
-    desc = {
-        "count": int(s_clean.shape[0]),
+    return {
         "mean": float(s_clean.mean()),         # média
         "median": float(s_clean.median()),     # mediana
-        "mode": float(mode) if pd.api.types.is_numeric_dtype(s_clean) else mode,  # moda
+        "mode": float(mode),                   # moda
         "std": float(s_clean.std(ddof=1)),     # desvio padrão
         "p25": float(s_clean.quantile(0.25)),  # percentis
         "p50": float(s_clean.quantile(0.50)),
@@ -22,7 +20,6 @@ def describe_series(s: pd.Series) -> dict:
         "min": float(s_clean.min()),
         "max": float(s_clean.max())
     }
-    return desc
 
 def plot_histogram(s: pd.Series, name: str):
     plt.figure()
@@ -43,7 +40,6 @@ def run_univariate(df: pd.DataFrame) -> pd.DataFrame:
         d = describe_series(df[c])
         d["variable"] = c
         rows.append(d)
-        # hist para numérica (ou categ com códigos numéricos)
         if pd.api.types.is_numeric_dtype(df[c]):
             plot_histogram(df[c], c)
     out = pd.DataFrame(rows).set_index("variable")

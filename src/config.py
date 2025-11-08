@@ -1,7 +1,7 @@
 from pathlib import Path
 
 # Caminhos
-DATA_PATH = Path("data/microdados_enem_2016.csv")
+DATA_PATH = Path("data/microdados_enem_2016_coma.csv")
 OUT_DIR = Path("outputs")
 FIG_DIR = OUT_DIR / "figures"
 REP_DIR = OUT_DIR / "reports"
